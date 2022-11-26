@@ -151,7 +151,7 @@ namespace Conhost.UIA.Tests.Common.NativeMethods
                 {
                     // The API returns bottom/right as the inclusive lower-right
                     // corner, so we need +1 for the true width
-                    return (short)(this.Right - this.Left + 1);
+                    return (short)(this.right - this.left + 1);
                 }
             }
 
@@ -161,7 +161,7 @@ namespace Conhost.UIA.Tests.Common.NativeMethods
                 {
                     // The API returns bottom/right as the inclusive lower-right
                     // corner, so we need +1 for the true height
-                    return (short)(this.Bottom - this.Top + 1);
+                    return (short)(this.bottom - this.top + 1);
                 }
             }
 

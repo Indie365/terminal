@@ -171,8 +171,8 @@ namespace Conhost.UIA.Tests.Elements
         public void FillCursorPosition(IntPtr hConsole, ref Point pt)
         {
             WinCon.COORD coord = GetCursorPosition(hConsole);
-            pt.X = coord.X;
-            pt.Y = coord.Y;
+            pt.x = coord.x;
+            pt.y = coord.y;
         }
 
         public bool IsCursorVisible(IntPtr hConsole)

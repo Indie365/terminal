@@ -75,8 +75,8 @@ namespace Conhost.UIA.Tests.Elements
             WinCon.CONSOLE_FONT_INFO cfi = new WinCon.CONSOLE_FONT_INFO();
             NativeMethods.Win32BoolHelper(WinCon.GetCurrentConsoleFont(hCon, false, out cfi), "Attempt to get current console font.");
 
-            this.sizeFont.Width = cfi.dwFontSize.X;
-            this.sizeFont.Height = cfi.dwFontSize.Y;
+            this.sizeFont.Width = cfi.dwFontSize.width;
+            this.sizeFont.Height = cfi.dwFontSize.height;
             AutoHelpers.LogInvariant("Font size is X:{0} Y:{1}", this.sizeFont.Width, this.sizeFont.Height);
         }
 
@@ -95,9 +95,9 @@ namespace Conhost.UIA.Tests.Elements
             Verify.IsTrue(User32.AdjustWindowRectEx(ref lpRect, style, false, exStyle));
 
             this.clientTopLeft = new Point();
-            this.clientTopLeft.X = Math.Abs(lpRect.left);
-            this.clientTopLeft.Y = Math.Abs(lpRect.top);
-            AutoHelpers.LogInvariant("Top left corner of client area is at X:{0} Y:{1}", this.clientTopLeft.X, this.clientTopLeft.Y);
+            this.clientTopLeft.x = Math.Abs(lpRect.left);
+            this.clientTopLeft.y = Math.Abs(lpRect.top);
+            AutoHelpers.LogInvariant("Top left corner of client area is at X:{0} Y:{1}", this.clientTopLeft.x, this.clientTopLeft.y);
         }
 
         public void ExitModes()
@@ -147,14 +147,14 @@ namespace Conhost.UIA.Tests.Elements
         // Accepts Point in characters. Will convert to pixels and move to the right location relative to this viewport.
         public void MouseMove(Point pt)
         {
-            Log.Comment($"Character position {pt.X}, {pt.Y}");
+            Log.Comment($"Character position {pt.x}, {pt.y}");
 
             Point modPoint = pt;
             ConvertCharacterOffsetToPixelPosition(ref modPoint);
 
-            Log.Comment($"Pixel position {modPoint.X}, {modPoint.Y}");
+            Log.Comment($"Pixel position {modPoint.x}, {modPoint.y}");
 
-            app.Session.Mouse.MouseMove(app.UIRoot.Coordinates, modPoint.X, modPoint.Y);
+            app.Session.Mouse.MouseMove(app.UIRoot.Coordinates, modPoint.x, modPoint.y);
         }
 
         public void MouseDown()
@@ -170,16 +170,16 @@ namespace Conhost.UIA.Tests.Elements
         private void ConvertCharacterOffsetToPixelPosition(ref Point pt)
         {
             // Scale by pixel count per character
-            pt.X *= this.sizeFont.Width;
-            pt.Y *= this.sizeFont.Height;
+            pt.x *= this.sizeFont.Width;
+            pt.y *= this.sizeFont.Height;
 
             // Move it to center of character
-            pt.X += this.sizeFont.Width / 2;
-            pt.Y += this.sizeFont.Height / 2;
+            pt.x += this.sizeFont.Width / 2;
+            pt.y += this.sizeFont.Height / 2;
 
             // Adjust to the top left corner of the client rectangle.
-            pt.X += this.clientTopLeft.X;
-            pt.Y += this.clientTopLeft.Y;
+            pt.x += this.clientTopLeft.x;
+            pt.y += this.clientTopLeft.y;
         }
 
         public WinCon.CHAR_INFO GetCharInfoAt(IntPtr handle, Point pt)
@@ -195,22 +195,22 @@ namespace Conhost.UIA.Tests.Elements
         public WinCon.CHAR_INFO[,] GetCharInfoInRectangle(IntPtr handle, Rectangle rect)
         {
             WinCon.SMALL_RECT readRectangle = new WinCon.SMALL_RECT();
-            readRectangle.Top = (short)rect.Top;
-            readRectangle.Bottom = (short)(rect.Bottom - 1);
-            readRectangle.Left = (short)rect.Left;
-            readRectangle.Right = (short)(rect.Right - 1);
+            readRectangle.top = (short)rect.top;
+            readRectangle.bottom = (short)(rect.bottom - 1);
+            readRectangle.left = (short)rect.left;
+            readRectangle.right = (short)(rect.right - 1);
 
             WinCon.COORD dataBufferSize = new WinCon.COORD();
-            dataBufferSize.X = (short)rect.Width;
-            dataBufferSize.Y = (short)rect.Height;
+            dataBufferSize.width = (short)rect.Width;
+            dataBufferSize.height = (short)rect.Height;
 
             WinCon.COORD dataBufferPos = new WinCon.COORD();
-            dataBufferPos.X = 0;
-            dataBufferPos.Y = 0;
+            dataBufferPos.x = 0;
+            dataBufferPos.y = 0;
 
-            WinCon.CHAR_INFO[,] data = new WinCon.CHAR_INFO[dataBufferSize.Y, dataBufferSize.X];
+            WinCon.CHAR_INFO[,] data = new WinCon.CHAR_INFO[dataBufferSize.height, dataBufferSize.width];
 
-            NativeMethods.Win32BoolHelper(WinCon.ReadConsoleOutput(handle, data, dataBufferSize, dataBufferPos, ref readRectangle), string.Format("Attempting to read rectangle (L: {0}, T: {1}, R: {2}, B: {3}) from output buffer.", readRectangle.Left, readRectangle.Top, readRectangle.Right, readRectangle.Bottom));
+            NativeMethods.Win32BoolHelper(WinCon.ReadConsoleOutput(handle, data, dataBufferSize, dataBufferPos, ref readRectangle), string.Format("Attempting to read rectangle (L: {0}, T: {1}, R: {2}, B: {3}) from output buffer.", readRectangle.left, readRectangle.top, readRectangle.right, readRectangle.bottom));
 
             return data;
         }

@@ -44,13 +44,13 @@ namespace Conhost.UIA.Tests
 
                     WinCon.CONSOLE_SCREEN_BUFFER_INFO_EX info = app.GetScreenBufferInfo(handle);
 
-                    info.srWindow.Left = 0;
-                    info.srWindow.Right = 30;
-                    info.srWindow.Top = 0;
-                    info.srWindow.Bottom = 30;
+                    info.srWindow.left = 0;
+                    info.srWindow.right = 30;
+                    info.srWindow.top = 0;
+                    info.srWindow.bottom = 30;
 
-                    info.dwSize.X = 100;
-                    info.dwSize.Y = 100;
+                    info.dwSize.width = 100;
+                    info.dwSize.height = 100;
                     app.SetScreenBufferInfo(handle, info);
 
                     Log.Comment("Now retrieve the starting position of the window viewport.");
@@ -120,13 +120,13 @@ namespace Conhost.UIA.Tests
                     // Scrolling "negative" vertically is pulling the wheel downward which makes the lines move down.
                     // This means that if you scroll down from the top, before = 0 and after = 3. 0 - 3 = -3.
                     // The - sign of the delta here then aligns with the down = negative rule.
-                    deltaActual = beforeScroll.srWindow.Top - afterScroll.srWindow.Top;
+                    deltaActual = beforeScroll.srWindow.top - afterScroll.srWindow.top;
                     break;
                 case ScrollDir.Horizontal:
                     // Scrolling "negative" horizontally is pushing the wheel left which makes lines move left.
                     // This means that if you scroll left, before = 3 and after = 0. 0 - 3 = -3.
                     // The - sign of the delta here then aligns with the left = negative rule.
-                    deltaActual = afterScroll.srWindow.Left - beforeScroll.srWindow.Left;
+                    deltaActual = afterScroll.srWindow.left - beforeScroll.srWindow.left;
                     break;
                 default:
                     throw new NotSupportedException();

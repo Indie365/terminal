@@ -158,11 +158,11 @@ namespace Conhost.UIA.Tests
             {
                 // For each character, we expect a pair of messages.
                 // 1. A Update Simple where the cursor was to represent the letter inserted where the cursor was.
-                expected.Enqueue(new EventData(EventType.UpdateSimple, sbiex.dwCursorPosition.X, sbiex.dwCursorPosition.Y, c, (int)sbiex.wAttributes));
+                expected.Enqueue(new EventData(EventType.UpdateSimple, sbiex.dwCursorPosition.x, sbiex.dwCursorPosition.y, c, (int)sbiex.wAttributes));
                 // Move cursor right by 1.
-                sbiex.dwCursorPosition.X++;
+                sbiex.dwCursorPosition.x++;
                 // 2. A caret visible to represent where the cursor moved after the letter was inserted.
-                expected.Enqueue(new EventData(EventType.CaretVisible, sbiex.dwCursorPosition.X, sbiex.dwCursorPosition.Y));
+                expected.Enqueue(new EventData(EventType.CaretVisible, sbiex.dwCursorPosition.x, sbiex.dwCursorPosition.y));
 
                 // Type in the letter
                 app.UIRoot.SendKeys($"{c}");
@@ -222,11 +222,11 @@ namespace Conhost.UIA.Tests
             {
                 // Move mouse pointer to where the cursor is
                 NativeMethods.Win32BoolHelper(WinCon.GetConsoleScreenBufferInfoEx(hConsole, ref sbiex), "Update console data.");
-                Point pt = new Point(sbiex.dwCursorPosition.X, sbiex.dwCursorPosition.Y);
+                Point pt = new Point(sbiex.dwCursorPosition.x, sbiex.dwCursorPosition.y);
                 area.MouseMove(pt);
 
                 // Click on this area.
-                expected.Enqueue(new EventData(EventType.CaretSelection, sbiex.dwCursorPosition.X, sbiex.dwCursorPosition.Y));
+                expected.Enqueue(new EventData(EventType.CaretSelection, sbiex.dwCursorPosition.x, sbiex.dwCursorPosition.y));
                 area.MouseDown();
                 area.MouseUp();
 
@@ -242,7 +242,7 @@ namespace Conhost.UIA.Tests
                 Globals.WaitForTimeout();
 
                 // Expect to see the caret again after leaving selection mode
-                expected.Enqueue(new EventData(EventType.CaretVisible, sbiex.dwCursorPosition.X, sbiex.dwCursorPosition.Y));
+                expected.Enqueue(new EventData(EventType.CaretVisible, sbiex.dwCursorPosition.x, sbiex.dwCursorPosition.y));
                 VerifyQueue(expected);
             }
 
@@ -250,19 +250,19 @@ namespace Conhost.UIA.Tests
             {
                 // Move mouse pointer to where the cursor is
                 NativeMethods.Win32BoolHelper(WinCon.GetConsoleScreenBufferInfoEx(hConsole, ref sbiex), "Update console data.");
-                Point pt = new Point(sbiex.dwCursorPosition.X, sbiex.dwCursorPosition.Y);
+                Point pt = new Point(sbiex.dwCursorPosition.x, sbiex.dwCursorPosition.y);
                 area.MouseMove(pt);
 
                 // Click on this area.
-                expected.Enqueue(new EventData(EventType.CaretSelection, sbiex.dwCursorPosition.X, sbiex.dwCursorPosition.Y));
+                expected.Enqueue(new EventData(EventType.CaretSelection, sbiex.dwCursorPosition.x, sbiex.dwCursorPosition.y));
                 area.MouseDown();
 
                 Globals.WaitForTimeout();
 
                 Point ptDrag = pt;
                 // Drag down and right for "some" distance. 10 isn't for a specific reason, it's just "some".
-                ptDrag.X += 10;
-                ptDrag.Y += 10;
+                ptDrag.x += 10;
+                ptDrag.y += 10;
 
                 area.MouseMove(ptDrag);
 
@@ -276,7 +276,7 @@ namespace Conhost.UIA.Tests
                 VerifyQueue(expected);
 
                 // Now we have to take the final message in the queue and make sure it is where we released the mouse
-                EventData expectedLast = new EventData(EventType.CaretSelection, ptDrag.X, ptDrag.Y);
+                EventData expectedLast = new EventData(EventType.CaretSelection, ptDrag.x, ptDrag.y);
                 EventData actualLast = received.Last();
                 Verify.AreEqual(expectedLast, actualLast);
 
@@ -288,7 +288,7 @@ namespace Conhost.UIA.Tests
                 Globals.WaitForTimeout();
 
                 // Expect to see the caret again after leaving selection mode
-                expected.Enqueue(new EventData(EventType.CaretVisible, sbiex.dwCursorPosition.X, sbiex.dwCursorPosition.Y));
+                expected.Enqueue(new EventData(EventType.CaretVisible, sbiex.dwCursorPosition.x, sbiex.dwCursorPosition.y));
                 VerifyQueue(expected);
             }
         }
@@ -314,15 +314,15 @@ namespace Conhost.UIA.Tests
                 Log.Comment("Press enter to launch and observe launch events.");
                 NativeMethods.Win32BoolHelper(WinCon.GetConsoleScreenBufferInfoEx(hConsole, ref sbiex), "Update console data.");
                 expected.Enqueue(new EventData(EventType.StartApplication));
-                expected.Enqueue(new EventData(EventType.UpdateRegion, 0, 0, sbiex.dwSize.X - 1, sbiex.dwSize.Y - 1));
-                sbiex.dwCursorPosition.Y++;
-                expected.Enqueue(new EventData(EventType.UpdateRegion, 0, sbiex.dwCursorPosition.Y, "Microsoft Windows [Version 10.0.14974.1001]".Length - 1, sbiex.dwCursorPosition.Y));
-                sbiex.dwCursorPosition.Y++;
-                expected.Enqueue(new EventData(EventType.UpdateRegion, 0, sbiex.dwCursorPosition.Y, "(c) 2016 Microsoft Corporation. All rights reserved.".Length - 1, sbiex.dwCursorPosition.Y));
-                sbiex.dwCursorPosition.Y++;
-                sbiex.dwCursorPosition.Y++;
-                expected.Enqueue(new EventData(EventType.UpdateRegion, 0, sbiex.dwCursorPosition.Y, sbiexOriginal.dwCursorPosition.X - 1, sbiex.dwCursorPosition.Y));
-                expected.Enqueue(new EventData(EventType.CaretVisible, sbiexOriginal.dwCursorPosition.X, sbiex.dwCursorPosition.Y));
+                expected.Enqueue(new EventData(EventType.UpdateRegion, 0, 0, sbiex.dwSize.width - 1, sbiex.dwSize.height - 1));
+                sbiex.dwCursorPosition.y++;
+                expected.Enqueue(new EventData(EventType.UpdateRegion, 0, sbiex.dwCursorPosition.y, "Microsoft Windows [Version 10.0.14974.1001]".Length - 1, sbiex.dwCursorPosition.y));
+                sbiex.dwCursorPosition.y++;
+                expected.Enqueue(new EventData(EventType.UpdateRegion, 0, sbiex.dwCursorPosition.y, "(c) 2016 Microsoft Corporation. All rights reserved.".Length - 1, sbiex.dwCursorPosition.y));
+                sbiex.dwCursorPosition.y++;
+                sbiex.dwCursorPosition.y++;
+                expected.Enqueue(new EventData(EventType.UpdateRegion, 0, sbiex.dwCursorPosition.y, sbiexOriginal.dwCursorPosition.x - 1, sbiex.dwCursorPosition.y));
+                expected.Enqueue(new EventData(EventType.CaretVisible, sbiexOriginal.dwCursorPosition.x, sbiex.dwCursorPosition.y));
 
                 app.UIRoot.SendKeys(Keys.Enter);
                 Globals.WaitForTimeout();
@@ -342,10 +342,10 @@ namespace Conhost.UIA.Tests
                 Log.Comment("Press enter to launch and observe exit events.");
                 NativeMethods.Win32BoolHelper(WinCon.GetConsoleScreenBufferInfoEx(hConsole, ref sbiex), "Update console data.");
                 expected.Enqueue(new EventData(EventType.EndApplication));
-                sbiex.dwCursorPosition.Y++;
-                sbiex.dwCursorPosition.Y++;
-                expected.Enqueue(new EventData(EventType.UpdateRegion, 0, sbiex.dwCursorPosition.Y, sbiexOriginal.dwCursorPosition.X - 1, sbiex.dwCursorPosition.Y));
-                expected.Enqueue(new EventData(EventType.CaretVisible, sbiexOriginal.dwCursorPosition.X, sbiex.dwCursorPosition.Y));
+                sbiex.dwCursorPosition.y++;
+                sbiex.dwCursorPosition.y++;
+                expected.Enqueue(new EventData(EventType.UpdateRegion, 0, sbiex.dwCursorPosition.y, sbiexOriginal.dwCursorPosition.x - 1, sbiex.dwCursorPosition.y));
+                expected.Enqueue(new EventData(EventType.CaretVisible, sbiexOriginal.dwCursorPosition.x, sbiex.dwCursorPosition.y));
 
                 app.UIRoot.SendKeys(Keys.Enter);
                 Globals.WaitForTimeout();
@@ -402,19 +402,19 @@ namespace Conhost.UIA.Tests
         {
             // Get original screen information
             sbiexOriginal = app.GetScreenBufferInfo();
-            short promptLineEnd = sbiexOriginal.dwCursorPosition.X;
+            short promptLineEnd = sbiexOriginal.dwCursorPosition.x;
             promptLineEnd--; // prompt line ended one position left of cursor
 
             // Resize the window to only have two lines left at the bottom to test overflow when we echo some text
             sbiex = sbiexOriginal;
-            sbiex.srWindow.Bottom = sbiex.dwCursorPosition.Y;
-            sbiex.srWindow.Bottom += 3;
+            sbiex.srWindow.bottom = sbiex.dwCursorPosition.y;
+            sbiex.srWindow.bottom += 3;
             app.SetScreenBufferInfo(sbiex);
 
             string echoText = "foo";
             string echoCommand = "echo";
 
-            int echoLine = sbiexOriginal.dwCursorPosition.Y + 1;
+            int echoLine = sbiexOriginal.dwCursorPosition.y + 1;
             expected.Enqueue(new EventData(EventType.UpdateRegion, 0, echoLine, echoText.Length - 1, echoLine));
             expected.Enqueue(new EventData(EventType.UpdateScroll, 0, -1));
             int newPromptLine = echoLine + 2;

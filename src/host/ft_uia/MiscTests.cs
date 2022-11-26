@@ -73,18 +73,18 @@ namespace Conhost.UIA.Tests
             AutoHelpers.LogInvariant("Initial viewport position: {0}", srWindow);
 
             // Check for arithmetic underflows & overflows.
-            int newRight = left + srWindow.Right - srWindow.Left + 1;
-            if (left < 0 || newRight > csbi.dwSize.X || newRight < 0)
+            int newRight = left + srWindow.right - srWindow.left + 1;
+            if (left < 0 || newRight > csbi.dwSize.width || newRight < 0)
                 throw new ArgumentOutOfRangeException("left");
-            int newBottom = top + srWindow.Bottom - srWindow.Top + 1;
-            if (top < 0 || newBottom > csbi.dwSize.Y || newBottom < 0)
+            int newBottom = top + srWindow.bottom - srWindow.top + 1;
+            if (top < 0 || newBottom > csbi.dwSize.height || newBottom < 0)
                 throw new ArgumentOutOfRangeException("top");
 
             // Preserve the size, but move the position.
-            srWindow.Bottom -= (short)(srWindow.Top - top);
-            srWindow.Right -= (short)(srWindow.Left - left);
-            srWindow.Left = (short)left;
-            srWindow.Top = (short)top;
+            srWindow.bottom -= (short)(srWindow.top - top);
+            srWindow.right -= (short)(srWindow.left - left);
+            srWindow.left = (short)left;
+            srWindow.top = (short)top;
 
             NativeMethods.Win32BoolHelper(WinCon.SetConsoleWindowInfo(hConsole, true, ref srWindow), string.Format("Attempt to update viewport position to {0}.", srWindow));
         }

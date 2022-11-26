@@ -83,8 +83,8 @@ namespace Conhost.UIA.Tests
 
                             WinCon.COORD cursorPos = app.GetCursorPosition(hConsole);
                             WinCon.COORD cursorExpected = new WinCon.COORD();
-                            cursorExpected.X = 0;
-                            cursorExpected.Y = 1;
+                            cursorExpected.x = 0;
+                            cursorExpected.y = 1;
                             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has moved to expected starting position.");
 
                             TestCursorPositioningCommands(app, hConsole, cursorExpected);
@@ -114,16 +114,16 @@ namespace Conhost.UIA.Tests
             Log.Comment("Move cursor to the middle-ish");
             Point cursorExpected = new Point();
             // H is at 5, 1. VT coords are 1-based and buffer is 0-based so adjust.
-            cursorExpected.Y = 5 - 1;
-            cursorExpected.X = 1 - 1;
+            cursorExpected.y = 5 - 1;
+            cursorExpected.x = 1 - 1;
             app.UIRoot.SendKeys("H");
 
             // Move to middle-ish from here. 10 Bs and 10 Cs should about do it.
             for (int i = 0; i < 10; i++)
             {
                 app.UIRoot.SendKeys("BC");
-                cursorExpected.Y++;
-                cursorExpected.X++;
+                cursorExpected.y++;
+                cursorExpected.x++;
             }
 
             WinCon.SMALL_RECT viewport = app.GetViewport(hConsole);
@@ -133,7 +133,7 @@ namespace Conhost.UIA.Tests
             WinCon.CHAR_INFO ciCursor = area.GetCharInfoAt(hConsole, cursorExpected);
             Verify.AreEqual(' ', ciCursor.UnicodeChar);
 
-            Point endOfCursorLine = new Point(viewport.Right, cursorExpected.Y);
+            Point endOfCursorLine = new Point(viewport.right, cursorExpected.y);
 
             app.UIRoot.SendKeys("P"); // delete
             WinCon.CHAR_INFO ciEndOfLine = area.GetCharInfoAt(hConsole, endOfCursorLine);
@@ -142,15 +142,15 @@ namespace Conhost.UIA.Tests
             Verify.AreEqual('Z', ciCursor.UnicodeChar);
 
             // Move to end of line and check both insert and delete operations
-            while (cursorExpected.X < viewport.Right)
+            while (cursorExpected.x < viewport.right)
             {
                 app.UIRoot.SendKeys("C");
-                cursorExpected.X++;
+                cursorExpected.x++;
             }
 
             // move up a line to get some fresh Z
             app.UIRoot.SendKeys("A");
-            cursorExpected.Y--;
+            cursorExpected.y--;
 
             app.UIRoot.SendKeys("O"); // insert at end of line
             ciCursor = area.GetCharInfoAt(hConsole, cursorExpected);
@@ -158,7 +158,7 @@ namespace Conhost.UIA.Tests
 
             // move up a line to get some fresh Z
             app.UIRoot.SendKeys("A");
-            cursorExpected.Y--;
+            cursorExpected.y--;
 
             app.UIRoot.SendKeys("P"); // delete at end of line
             ciCursor = area.GetCharInfoAt(hConsole, cursorExpected);
@@ -196,7 +196,7 @@ namespace Conhost.UIA.Tests
 
             app.UIRoot.SendKeys("R");
             cursorPos = app.GetCursorPosition(hConsole);
-            expectedTitle = string.Format("Response Received: {0}", string.Format("\x1b[{0};{1}R", cursorPos.Y + 1, cursorPos.X + 1));
+            expectedTitle = string.Format("Response Received: {0}", string.Format("\x1b[{0};{1}R", cursorPos.y + 1, cursorPos.x + 1));
 
             Globals.WaitForTimeout();
             title = app.GetWindowTitle();
@@ -467,69 +467,69 @@ namespace Conhost.UIA.Tests
             // Try cursor commands
             Log.Comment("Press B key (cursor down)");
             app.UIRoot.SendKeys("B");
-            cursorExpected.Y++;
+            cursorExpected.y++;
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has moved down by 1.");
 
             Log.Comment("Press A key (cursor up)");
             app.UIRoot.SendKeys("A");
-            cursorExpected.Y--;
+            cursorExpected.y--;
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has moved up by 1.");
 
             Log.Comment("Press C key (cursor right)");
             app.UIRoot.SendKeys("C");
-            cursorExpected.X++;
+            cursorExpected.x++;
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has moved right by 1.");
 
             Log.Comment("Press D key (cursor left)");
             app.UIRoot.SendKeys("D");
-            cursorExpected.X--;
+            cursorExpected.x--;
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has moved left by 1.");
 
             Log.Comment("Move to the right (C) then move down a line (E)");
             app.UIRoot.SendKeys("CCC");
-            cursorExpected.X += 3;
+            cursorExpected.x += 3;
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has right by 3.");
 
             app.UIRoot.SendKeys("E");
-            cursorExpected.Y++;
-            cursorExpected.X = 0;
+            cursorExpected.y++;
+            cursorExpected.x = 0;
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has moved down by 1 line and reset X position to 0.");
 
             Log.Comment("Move to the right (C) then move up a line (F)");
             app.UIRoot.SendKeys("CCC");
-            cursorExpected.X += 3;
+            cursorExpected.x += 3;
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check curs has right by 3.");
 
             app.UIRoot.SendKeys("F");
-            cursorExpected.Y--;
-            cursorExpected.X = 0;
+            cursorExpected.y--;
+            cursorExpected.x = 0;
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has moved up by 1 line.");
 
             Log.Comment("Check move directly to position 14 horizontally (G)");
             app.UIRoot.SendKeys("G");
-            cursorExpected.X = 14 - 1; // 14 is the VT position which starts at array offset 1. 13 is the buffer position starting at array offset 0.
+            cursorExpected.x = 14 - 1; // 14 is the VT position which starts at array offset 1. 13 is the buffer position starting at array offset 0.
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has moved to horizontal position 14.");
 
             Log.Comment("Check move directly to position 14 vertically (v key mapped to d)");
             app.UIRoot.SendKeys("v");
-            cursorExpected.Y = 14 - 1; // 14 is the VT position which starts at array offset 1. 13 is the buffer position starting at array offset 0.
+            cursorExpected.y = 14 - 1; // 14 is the VT position which starts at array offset 1. 13 is the buffer position starting at array offset 0.
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has moved to vertical position 14.");
 
             Log.Comment("Check move directly to row 5, column 1 (H)");
             app.UIRoot.SendKeys("H");
             // Again -1s are to convert index base 1 VT to console base 0 arrays
-            cursorExpected.Y = 5 - 1;
-            cursorExpected.X = 1 - 1;
+            cursorExpected.y = 5 - 1;
+            cursorExpected.x = 1 - 1;
             cursorPos = app.GetCursorPosition(hConsole);
             Verify.AreEqual(cursorExpected, cursorPos, "Check cursor has moved to row 5, column 1.");
         }
@@ -599,17 +599,17 @@ namespace Conhost.UIA.Tests
                 {
                     return ' ';
                 }
-                else if (rowId < cursorPos.Y)
+                else if (rowId < cursorPos.y)
                 {
                     return 'Z';
                 }
-                else if (rowId > cursorPos.Y)
+                else if (rowId > cursorPos.y)
                 {
                     return ' ';
                 }
                 else
                 {
-                    if (colId < cursorPos.X)
+                    if (colId < cursorPos.x)
                     {
                         return 'Z';
                     }
@@ -632,17 +632,17 @@ namespace Conhost.UIA.Tests
                 {
                     return ' ';
                 }
-                else if (rowId < cursorPos.Y)
+                else if (rowId < cursorPos.y)
                 {
                     return ' ';
                 }
-                else if (rowId > cursorPos.Y)
+                else if (rowId > cursorPos.y)
                 {
                     return 'Z';
                 }
                 else
                 {
-                    if (colId <= cursorPos.X)
+                    if (colId <= cursorPos.x)
                     {
                         return ' ';
                     }
@@ -665,13 +665,13 @@ namespace Conhost.UIA.Tests
                 {
                     return ' ';
                 }
-                else if (rowId != cursorPos.Y)
+                else if (rowId != cursorPos.y)
                 {
                     return 'Z';
                 }
                 else
                 {
-                    if (colId < cursorPos.X)
+                    if (colId < cursorPos.x)
                     {
                         return 'Z';
                     }
@@ -694,13 +694,13 @@ namespace Conhost.UIA.Tests
                 {
                     return ' ';
                 }
-                else if (rowId != cursorPos.Y)
+                else if (rowId != cursorPos.y)
                 {
                     return 'Z';
                 }
                 else
                 {
-                    if (colId <= cursorPos.X)
+                    if (colId <= cursorPos.x)
                     {
                         return ' ';
                     }
@@ -742,7 +742,7 @@ namespace Conhost.UIA.Tests
         private static void BufferVerificationHelper(CmdApp app, ViewportArea area, IntPtr hConsole, GetExpectedChar expectedCharAlgorithm)
         {
             WinCon.SMALL_RECT viewport = app.GetViewport(hConsole);
-            Rectangle selectRect = new Rectangle(viewport.Left, viewport.Top, viewport.Width, viewport.Height);
+            Rectangle selectRect = new Rectangle(viewport.left, viewport.top, viewport.Width, viewport.Height);
             IEnumerable<string> scrapedText = area.GetLinesInRectangle(hConsole, selectRect);
 
             Verify.AreEqual(viewport.Height, scrapedText.Count(), "Verify the rows scraped is equal to the entire viewport height.");

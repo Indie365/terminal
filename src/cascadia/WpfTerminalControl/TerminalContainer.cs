@@ -205,11 +205,11 @@ namespace Microsoft.Terminal.Wpf
                 (int)renderSize.Height,
                 out NativeMethods.TilSize dimensions);
 
-            this.Rows = dimensions.Y;
-            this.Columns = dimensions.X;
+            this.Rows = dimensions.y;
+            this.Columns = dimensions.x;
             this.TerminalRendererSize = renderSize;
 
-            this.Connection?.Resize((uint)dimensions.Y, (uint)dimensions.X);
+            this.Connection?.Resize((uint)dimensions.y, (uint)dimensions.x);
         }
 
         /// <summary>
@@ -237,16 +237,16 @@ namespace Microsoft.Terminal.Wpf
 
             NativeMethods.TerminalTriggerResizeWithDimension(this.terminal, dimensions, out var dimensionsInPixels);
 
-            this.Columns = dimensions.X;
-            this.Rows = dimensions.Y;
+            this.Columns = dimensions.x;
+            this.Rows = dimensions.y;
 
             this.TerminalRendererSize = new Size
             {
-                Width = dimensionsInPixels.X,
-                Height = dimensionsInPixels.Y,
+                Width = dimensionsInPixels.x,
+                Height = dimensionsInPixels.y,
             };
 
-            this.Connection?.Resize((uint)dimensions.Y, (uint)dimensions.X);
+            this.Connection?.Resize((uint)dimensions.y, (uint)dimensions.x);
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace Microsoft.Terminal.Wpf
         {
             NativeMethods.TerminalCalculateResize(this.terminal, (int)size.Width, (int)size.Height, out NativeMethods.TilSize dimensions);
 
-            return (dimensions.X, dimensions.Y);
+            return (dimensions.x, dimensions.y);
         }
 
         /// <summary>
@@ -391,7 +391,7 @@ namespace Microsoft.Terminal.Wpf
                     case NativeMethods.WindowMessage.WM_WINDOWPOSCHANGED:
                         var windowpos = (NativeMethods.WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(NativeMethods.WINDOWPOS));
                         if (((NativeMethods.SetWindowPosFlags)windowpos.flags).HasFlag(NativeMethods.SetWindowPosFlags.SWP_NOSIZE)
-                            || (windowpos.cx == 0 && windowpos.cy == 0))
+                            || (windowpos.width == 0 && windowpos.height == 0))
                         {
                             break;
                         }
@@ -400,15 +400,15 @@ namespace Microsoft.Terminal.Wpf
 
                         if (this.AutoResize)
                         {
-                            NativeMethods.TerminalTriggerResize(this.terminal, windowpos.cx, windowpos.cy, out dimensions);
+                            NativeMethods.TerminalTriggerResize(this.terminal, windowpos.width, windowpos.height, out dimensions);
 
-                            this.Columns = dimensions.X;
-                            this.Rows = dimensions.Y;
+                            this.Columns = dimensions.x;
+                            this.Rows = dimensions.y;
 
                             this.TerminalRendererSize = new Size
                             {
-                                Width = windowpos.cx,
-                                Height = windowpos.cy,
+                                Width = windowpos.width,
+                                Height = windowpos.height,
                             };
                         }
                         else
@@ -417,7 +417,7 @@ namespace Microsoft.Terminal.Wpf
                             NativeMethods.TerminalCalculateResize(this.terminal, (int)this.TerminalControlSize.Width, (int)this.TerminalControlSize.Height, out dimensions);
                         }
 
-                        this.Connection?.Resize((uint)dimensions.Y, (uint)dimensions.X);
+                        this.Connection?.Resize((uint)dimensions.y, (uint)dimensions.x);
                         break;
 
                     case NativeMethods.WindowMessage.WM_MOUSEWHEEL:

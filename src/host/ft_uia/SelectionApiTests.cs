@@ -94,12 +94,12 @@ namespace Conhost.UIA.Tests
 
                     // The cursor can't have moved down a line. We're going to verify the text by reading its "rectangle" out of the screen buffer.
                     // If it moved down a line, the calculation of what to select is more complicated than the simple rectangle assignment below.
-                    Verify.AreEqual(sbiexOriginal.dwCursorPosition.Y, sbiexWithText.dwCursorPosition.Y, "There's an assumption here that the cursor stayed on the same line when we added our bit of text.");
+                    Verify.AreEqual(sbiexOriginal.dwCursorPosition.y, sbiexWithText.dwCursorPosition.y, "There's an assumption here that the cursor stayed on the same line when we added our bit of text.");
 
                     // Prepare the read rectangle for what we want to get out of the buffer.
-                    Rectangle readRectangle = new Rectangle(sbiexOriginal.dwCursorPosition.X,
-                                                            sbiexOriginal.dwCursorPosition.Y,
-                                                            (sbiexWithText.dwCursorPosition.X - sbiexOriginal.dwCursorPosition.X),
+                    Rectangle readRectangle = new Rectangle(sbiexOriginal.dwCursorPosition.x,
+                                                            sbiexOriginal.dwCursorPosition.y,
+                                                            (sbiexWithText.dwCursorPosition.x - sbiexOriginal.dwCursorPosition.x),
                                                             1);
 
                     Log.Comment("Verify that the text we keyed matches what's in the buffer.");
@@ -113,7 +113,7 @@ namespace Conhost.UIA.Tests
                     const int lefts = 4;
                     for (int i = 0; i < lefts; i++)
                     {
-                        app.UIRoot.SendKeys(Keys.Left);
+                        app.UIRoot.SendKeys(Keys.left);
                     }
 
                     Globals.WaitForTimeout();
@@ -187,15 +187,15 @@ namespace Conhost.UIA.Tests
 
                         // The expected anchor when we're done is this initial cursor position
                         WinCon.COORD expectedAnchor = new WinCon.COORD();
-                        expectedAnchor.X = cbiex.dwCursorPosition.X;
-                        expectedAnchor.Y = cbiex.dwCursorPosition.Y;
+                        expectedAnchor.x = cbiex.dwCursorPosition.x;
+                        expectedAnchor.y = cbiex.dwCursorPosition.y;
 
                         // The expected rect is going to start from this cursor position. We'll modify it after we perform some operations.
                         WinCon.SMALL_RECT expectedRect = new WinCon.SMALL_RECT();
-                        expectedRect.Top = expectedAnchor.Y;
-                        expectedRect.Left = expectedAnchor.X;
-                        expectedRect.Right = expectedAnchor.X;
-                        expectedRect.Bottom = expectedAnchor.Y;
+                        expectedRect.top = expectedAnchor.y;
+                        expectedRect.left = expectedAnchor.x;
+                        expectedRect.right = expectedAnchor.x;
+                        expectedRect.bottom = expectedAnchor.y;
 
                         // Now set up the keyboard and enter mark mode.
                         // NOTE: We must wait after every keyboard sequence to give the console time to process before asking it for changes.
@@ -209,13 +209,13 @@ namespace Conhost.UIA.Tests
                         // Select a small region
                         Log.Comment("1. Select a small region");
 
-                        app.UIRoot.SendKeys(Keys.Shift + Keys.Right + Keys.Right + Keys.Right + Keys.Down + Keys.Shift);
+                        app.UIRoot.SendKeys(Keys.Shift + Keys.right + Keys.right + Keys.right + Keys.Down + Keys.Shift);
 
                         Globals.WaitForTimeout();
 
                         // Adjust the expected rectangle for the commands we just entered.
-                        expectedRect.Right += 3; // same as the number of Rights we put in
-                        expectedRect.Bottom += 1; // same as the number of Downs we put in
+                        expectedRect.right += 3; // same as the number of Rights we put in
+                        expectedRect.bottom += 1; // same as the number of Downs we put in
 
                         NativeMethods.Win32BoolHelper(WinCon.GetConsoleSelectionInfo(out csi), "Get state of selected region.");
                         Log.Comment("Selection Info: {0}", csi);
@@ -239,13 +239,13 @@ namespace Conhost.UIA.Tests
                         // Select another region to ensure anchor moved.
                         Log.Comment("3. Select one more region from new position to verify anchor");
 
-                        app.UIRoot.SendKeys(Keys.Shift + Keys.Right + Keys.Shift);
+                        app.UIRoot.SendKeys(Keys.Shift + Keys.right + Keys.Shift);
 
                         Globals.WaitForTimeout();
 
-                        expectedAnchor.X = expectedRect.Right;
-                        expectedAnchor.Y = expectedRect.Bottom;
-                        expectedAnchor.Y++; // +1 for the Down in step 2. Not incremented in the line above because C# is unhappy with adding +1 to a short while assigning.
+                        expectedAnchor.x = expectedRect.right;
+                        expectedAnchor.y = expectedRect.bottom;
+                        expectedAnchor.y++; // +1 for the Down in step 2. Not incremented in the line above because C# is unhappy with adding +1 to a short while assigning.
 
                         Verify.AreEqual(csi.SelectionAnchor, expectedAnchor, "Verify anchor moved to the new start position.");
 
@@ -272,21 +272,21 @@ namespace Conhost.UIA.Tests
                     Point startPoint = new Point();
                     Point endPoint = new Point();
 
-                    startPoint.X = 1;
-                    startPoint.Y = 2;
+                    startPoint.x = 1;
+                    startPoint.y = 2;
 
-                    endPoint.X = 10;
-                    endPoint.Y = 10;
+                    endPoint.x = 10;
+                    endPoint.y = 10;
 
                     // Save expected anchor
                     WinCon.COORD expectedAnchor = new WinCon.COORD();
-                    expectedAnchor.X = (short)startPoint.X;
-                    expectedAnchor.Y = (short)startPoint.Y;
+                    expectedAnchor.x = (short)startPoint.x;
+                    expectedAnchor.y = (short)startPoint.y;
 
                     // Also save bottom right corner for the end of the selection
                     WinCon.COORD expectedBottomRight = new WinCon.COORD();
-                    expectedBottomRight.X = (short)endPoint.X;
-                    expectedBottomRight.Y = (short)endPoint.Y;
+                    expectedBottomRight.x = (short)endPoint.x;
+                    expectedBottomRight.y = (short)endPoint.y;
 
                     // Prepare the mouse by moving it into the start position. Prepare the structure
                     WinCon.CONSOLE_SELECTION_INFO csi;
@@ -305,10 +305,10 @@ namespace Conhost.UIA.Tests
                     flagsExpected |= WinCon.CONSOLE_SELECTION_INFO_FLAGS.CONSOLE_MOUSE_DOWN; // the mouse is still down
                     flagsExpected |= WinCon.CONSOLE_SELECTION_INFO_FLAGS.CONSOLE_SELECTION_NOT_EMPTY; // mouse selections are never empty. minimum 1x1
 
-                    expectedRect.Top = expectedAnchor.Y; // rectangle is just at the point itself 1x1 size
-                    expectedRect.Left = expectedAnchor.X;
-                    expectedRect.Bottom = expectedRect.Top;
-                    expectedRect.Right = expectedRect.Left;
+                    expectedRect.top = expectedAnchor.y; // rectangle is just at the point itself 1x1 size
+                    expectedRect.left = expectedAnchor.x;
+                    expectedRect.bottom = expectedRect.top;
+                    expectedRect.right = expectedRect.left;
 
                     NativeMethods.Win32BoolHelper(WinCon.GetConsoleSelectionInfo(out csi), "Check state on mouse button down to start selection.");
                     Log.Comment("Selection Info: {0}", csi);
@@ -328,8 +328,8 @@ namespace Conhost.UIA.Tests
 
                     // anchor remains the same
                     // bottom right of rectangle now changes to the end point
-                    expectedRect.Bottom = expectedBottomRight.Y;
-                    expectedRect.Right = expectedBottomRight.X;
+                    expectedRect.bottom = expectedBottomRight.y;
+                    expectedRect.right = expectedBottomRight.x;
 
                     NativeMethods.Win32BoolHelper(WinCon.GetConsoleSelectionInfo(out csi), "Check state after drag and release mouse.");
                     Log.Comment("Selection Info: {0}", csi);

@@ -64,7 +64,7 @@ namespace Conhost.UIA.Tests
         private int _GetTotalRows(CmdApp app)
         {
             WinCon.CONSOLE_SCREEN_BUFFER_INFO_EX screenBufferInfo = app.GetScreenBufferInfo();
-            return screenBufferInfo.dwSize.Y;
+            return screenBufferInfo.dwSize.height;
         }
 
         private void _ClearScreenBuffer(CmdApp app)
@@ -73,11 +73,11 @@ namespace Conhost.UIA.Tests
             WinCon.CONSOLE_SCREEN_BUFFER_INFO_EX screenInfo = new WinCon.CONSOLE_SCREEN_BUFFER_INFO_EX();
             screenInfo.cbSize = (uint)Marshal.SizeOf(screenInfo);
             WinCon.GetConsoleScreenBufferInfoEx(outHandle, ref screenInfo);
-            int charCount = screenInfo.dwSize.X * screenInfo.dwSize.Y;
+            int charCount = screenInfo.dwSize.width * screenInfo.dwSize.height;
             string writeString = new string(' ', charCount);
             WinCon.COORD coord = new WinCon.COORD();
-            coord.X = 0;
-            coord.Y = 0;
+            coord.x = 0;
+            coord.y = 0;
             UInt32 charsWritten = 0;
             WinCon.WriteConsoleOutputCharacter(outHandle,
                                                writeString,
@@ -91,8 +91,8 @@ namespace Conhost.UIA.Tests
         {
             IntPtr outHandle = app.GetStdOutHandle();
             WinCon.COORD coord = new WinCon.COORD();
-            coord.X = 0;
-            coord.Y = 0;
+            coord.x = 0;
+            coord.y = 0;
             string row1 = "1234567890";
             string row2 = "   abcdefghijk";
             UInt32 charsWritten = 0;
@@ -102,7 +102,7 @@ namespace Conhost.UIA.Tests
                                                coord,
                                                ref charsWritten);
 
-            coord.Y = 1;
+            coord.y = 1;
             WinCon.WriteConsoleOutputCharacter(outHandle,
                                                row2,
                                                (uint)row2.Length,
@@ -162,7 +162,7 @@ namespace Conhost.UIA.Tests
                 using (ViewportArea area = new ViewportArea(app))
                 {
                     WinCon.CONSOLE_SCREEN_BUFFER_INFO_EX screenInfo = app.GetScreenBufferInfo();
-                    Rectangle rect = new Rectangle(0, 0, screenInfo.dwSize.X, screenInfo.dwSize.Y);
+                    Rectangle rect = new Rectangle(0, 0, screenInfo.dwSize.width, screenInfo.dwSize.height);
                     IEnumerable<string> viewportText = area.GetLinesInRectangle(hConsole, rect);
 
                     // the uia api does not return spaces beyond the last
@@ -239,7 +239,7 @@ namespace Conhost.UIA.Tests
 
                 // get the ranges from the console api
                 WinCon.CONSOLE_SCREEN_BUFFER_INFO_EX screenInfo = app.GetScreenBufferInfo();
-                int viewportHeight = screenInfo.srWindow.Bottom - screenInfo.srWindow.Top + 1;
+                int viewportHeight = screenInfo.srWindow.bottom - screenInfo.srWindow.top + 1;
 
                 // we should have one range per line in the viewport
                 Verify.AreEqual(ranges.GetLength(0), viewportHeight);
@@ -249,7 +249,7 @@ namespace Conhost.UIA.Tests
                 IntPtr hConsole = app.GetStdOutHandle();
                 for (int i = 0; i < viewportHeight; ++i)
                 {
-                    Rectangle rect = new Rectangle(0, i, screenInfo.dwSize.X, 1);
+                    Rectangle rect = new Rectangle(0, i, screenInfo.dwSize.width, 1);
                     IEnumerable<string> text = viewport.GetLinesInRectangle(hConsole, rect);
                     Verify.AreEqual(text.ElementAt(0).Trim(), ranges[i].GetText(-1).Trim());
                 }
@@ -308,7 +308,7 @@ namespace Conhost.UIA.Tests
                         // there should be only one bounding rect per TextPatternRange
                         Verify.AreEqual(boundingRects.GetLength(0), 1);
 
-                        Verify.IsTrue(boundingRects[0].Top >= lastBoundingRect.Top);
+                        Verify.IsTrue(boundingRects[0].top >= lastBoundingRect.top);
                         lastBoundingRect = boundingRects[0];
                     }
 
@@ -367,7 +367,7 @@ namespace Conhost.UIA.Tests
             using (CmdApp app = new CmdApp(CreateType.ProcessOnly, TestContext))
             {
                 var sbiex = app.GetScreenBufferInfo();
-                sbiex.dwSize.Y = (short)(2 * sbiex.srWindow.Height);
+                sbiex.dwSize.height = (short)(2 * sbiex.srWindow.Height);
                 app.SetScreenBufferInfo(sbiex);
 
                 AutomationElement textAreaUiaElement = GetTextAreaUiaElement(app);
@@ -407,7 +407,7 @@ namespace Conhost.UIA.Tests
             using (CmdApp app = new CmdApp(CreateType.ProcessOnly, TestContext))
             {
                 var sbiex = app.GetScreenBufferInfo();
-                sbiex.dwSize.Y = (short)(2 * sbiex.srWindow.Height);
+                sbiex.dwSize.height = (short)(2 * sbiex.srWindow.Height);
                 app.SetScreenBufferInfo(sbiex);
 
                 AutomationElement textAreaUiaElement = GetTextAreaUiaElement(app);
@@ -492,7 +492,7 @@ namespace Conhost.UIA.Tests
             using (CmdApp app = new CmdApp(CreateType.ProcessOnly, TestContext))
             {
                 var sbiex = app.GetScreenBufferInfo();
-                sbiex.dwSize.Y = (short)(2 * sbiex.srWindow.Height);
+                sbiex.dwSize.height = (short)(2 * sbiex.srWindow.Height);
                 app.SetScreenBufferInfo(sbiex);
 
                 AutomationElement textAreaUiaElement = GetTextAreaUiaElement(app);
@@ -558,7 +558,7 @@ namespace Conhost.UIA.Tests
             using (CmdApp app = new CmdApp(CreateType.ProcessOnly, TestContext))
             {
                 var sbiex = app.GetScreenBufferInfo();
-                sbiex.dwSize.Y = (short)(2 * sbiex.srWindow.Height);
+                sbiex.dwSize.height = (short)(2 * sbiex.srWindow.Height);
                 app.SetScreenBufferInfo(sbiex);
 
                 AutomationElement textAreaUiaElement = GetTextAreaUiaElement(app);
